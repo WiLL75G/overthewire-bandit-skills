@@ -105,7 +105,7 @@ underpins detection engineering and tooling work.
 
 ## How I approach being stuck
 
-The most useful thing Bandit taught me wasn't a command — it was a way of working
+The most useful thing Bandit taught me wasn't a command it was a way of working
 when the obvious path has already failed.
 
 One stage took me **two full days**. Every documented approach was correct, yet
@@ -162,6 +162,6 @@ advanced wargames (and real blue-team work) build on.
 
 ---
 
-*Part of my ongoing cybersecurity portfolio. I document my learning publicly —
+*Part of my ongoing cybersecurity portfolio. I document my learning publicly
 including the parts that don't come easily because that's what the work actually
 looks like.*
