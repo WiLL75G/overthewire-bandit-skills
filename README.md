@@ -2,7 +2,7 @@
 
 ## Walkthroughs
 
-Level by level writeups on Medium: [medium.com/@wgokahp](https://medium.com/@wgokahp)
+Level by level writeups on Medium: [![Medium](https://img.shields.io/badge/Medium-@wgokahp-black?style=flat&logo=medium)](https://medium.com/@wgokahp)
 
 **On spoilers:** OverTheWire asks players not to publish passwords or step by step solutions. This documents the skills and concepts each stage taught, not the answers. The point is to demonstrate understanding, not to hand out a cheat sheet.
 
