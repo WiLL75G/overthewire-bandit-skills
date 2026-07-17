@@ -1,167 +1,145 @@
-# OverTheWire Bandit Linux & Security Fundamentals
+# OverTheWire Bandit
 
-A documented walkthrough of the skills, concepts, and problem-solving approach I
-built completing the [OverTheWire Bandit](https://overthewire.org/wargames/bandit/)
-wargame end to end.
+A walkthrough of the Linux and security fundamentals I built completing [OverTheWire Bandit](https://overthewire.org/wargames/bandit/) end to end.
 
-> **Note on spoilers:** OverTheWire asks players not to publish passwords or
-> step-by-step solutions. In keeping with that, this repository documents the
-> *skills and concepts* each stage taught not the answers. The goal here is to
-> demonstrate understanding, not to provide a cheat sheet.
+**On spoilers:** OverTheWire asks players not to publish passwords or step by step solutions. This documents the skills and concepts each stage taught, not the answers. The point is to demonstrate understanding, not to hand out a cheat sheet.
 
----
+## At a Glance
 
-## Why this matters
+| Field | Detail |
+| --- | --- |
+| Wargame | OverTheWire Bandit, all 34 levels |
+| Focus | Linux fundamentals, SSH, privilege escalation, Git, restricted shells |
+| Tools | ssh, nc, openssl, nmap, diff, git, cron, GNU coreutils |
+| Cadence | Daily, alongside hands on SOC lab work |
+| Status | Complete |
 
-Bandit is a Linux and security fundamentals gauntlet. Each level locks the next
-behind a small challenge that forces you to actually use a tool or concept rather
-than just read about it: SSH internals, file handling, the shell, networking,
-privilege escalation, version control, and restricted-shell escapes.
+## Why This Matters
 
-I worked through it carving out focused time daily while building hands-on SOC
-projects in parallel. Completing it gave me a working command of the Linux and
-offensive-security primitives that underpin day-to-day blue-team work the same
-techniques an analyst needs to recognise when they appear in logs and alerts.
+Bandit locks each level behind a challenge that forces you to actually use a tool rather than read about it. SSH internals, file handling, the shell, networking, privilege escalation, version control, restricted shell escapes.
 
----
+The blue team value is not that I can escalate privileges. It is that I have seen every one of these techniques from the inside, which is what makes them recognisable in a log.
 
-## Skills demonstrated
+An analyst who has never used a setuid binary reads `-rwsr-xr-x` in a file listing and sees a permission string. An analyst who has used one sees a privilege escalation vector.
 
-| Skill area | Concepts practised |
-|---|---|
-| **SSH & remote access** | Key-based authentication, custom ports, non-interactive command execution, host-key handling |
-| **File analysis** | Comparing file versions, locating data by attribute, working with awkward filenames and file types |
-| **Networking** | Port and service discovery, connecting to raw TCP services, working with TLS-wrapped sockets |
-| **The shell** | Variable expansion, scripting loops, understanding how the shell parses and executes input |
-| **Privilege escalation** | setuid binaries, the difference between real and effective user IDs, using controlled binaries to act as another user |
-| **Scheduled tasks** | Reading and reasoning about cron jobs, exploiting writable script paths, understanding execution context |
-| **Version control security** | Recovering secrets from commit history, branches, and tags; understanding `.gitignore` limitations |
-| **Restricted-shell escapes** | Breaking out of pager-based and input-mangling shells using legitimate program features |
-| **Automation** | Generating and piping large input sets to brute-force a constrained search space |
+## Skills
 
----
+| Area | Concepts |
+| --- | --- |
+| SSH and remote access | Key based auth, custom ports, non interactive execution, host key handling |
+| File analysis | Comparing versions, locating data by attribute, handling filenames built to break naive commands |
+| Networking | Port and service discovery, raw TCP, TLS wrapped sockets |
+| The shell | Variable expansion, loops, how the shell parses and executes input |
+| Privilege escalation | setuid binaries, real versus effective UID, using controlled binaries to act as another user |
+| Scheduled tasks | Reading cron, reasoning about execution context, writable script paths |
+| Version control | Recovering secrets from commit history, branches, and tags. Why .gitignore is not a control |
+| Restricted shells | Escaping pager based and input mangling shells using legitimate program features |
+| Automation | Generating and piping input sets to brute force a constrained search space |
 
-## What each stage taught me
+## What Each Theme Taught
 
-Grouped by theme rather than by level, and kept spoiler-free.
+### SSH
 
-### Remote access and SSH
-Bandit makes you live in SSH. I worked with private-key authentication, learned
-why a service reachable *on* a host isn't the same as one you can log into *from*
-the outside, and used non-interactive SSH to run a single command when an
-interactive shell was deliberately sabotaged. The recurring lesson knowing
-*where* a connection originates and *where* the service actually lives came up
-again and again.
+Bandit makes you live in it. Private key auth, non interactive execution when the interactive shell is deliberately sabotaged, and the recurring lesson underneath all of it: a service reachable *on* a host is not the same as one you can log into *from* outside.
 
-### Files and the filesystem
-Several stages are about locating the right data: comparing two versions of a file
-to find what changed, finding a file by an attribute like size or owner, and
-handling filenames designed to break naive commands. These are the unglamorous
-skills that make real log and artefact triage faster.
+Knowing where a connection originates and where the service actually lives came up in almost every stage. That distinction is the same one that separates an inbound probe from a resident beacon in a packet capture.
+
+### Files
+
+Comparing two versions to find what changed. Finding a file by size or owner. Handling filenames engineered to break commands that assume well behaved input.
+
+Unglamorous, and it is most of what artefact triage actually is.
 
 ### Networking
-I used port scanning to map which services were listening, then connected to those
-services directly including ones wrapped in TLS, where a plain connection won't
-work. Understanding the difference between a raw TCP service and an encrypted one,
-and knowing the right client for each, is foundational network knowledge.
 
-### Privilege escalation
-A major theme. I worked with setuid binaries and learned the key distinction
-between a process's *real* and *effective* user the mechanism that lets a program
-run with its owner's permissions. Recognising a setuid binary in a file listing and
-understanding why it's a privilege-escalation vector is directly relevant to both
-attacking and defending Linux systems.
+Port scanning to map what is listening, then connecting to those services directly, including ones wrapped in TLS where a plain connection returns nothing useful.
 
-### Scheduled tasks (cron)
-A run of stages built on cron. I learned to read scheduled jobs, reason about the
-*context* a job runs in (which user, with which permissions), and understand why a
-writable script path executed by a privileged job is dangerous. The most important
-insight was about execution context what identity a scheduled task actually runs
-as, versus who triggers it.
+Knowing which client a service needs, and why a raw TCP connection to a TLS port fails, is foundational. It is also why plain HTTP on port 443 is worth alerting on.
 
-### Version control as an attack surface
-A full sequence on Git, and some of the most job-relevant material in the game.
-Secrets don't only live in the current files they hide in **commit history**,
-in **non-default branches**, and in **tags**. I practised recovering credentials
-that had been "removed" but never truly deleted, and saw first-hand why
-`.gitignore` is not a security control. This is exactly the surface that tools
-like `gitleaks` and `trufflehog` exist to scan, and it's a real concern in SOC,
-IR, and pentest work.
+### Privilege Escalation
 
-### Restricted-shell escapes
-Two stages drop you into deliberately crippled shells. Escaping them meant
-understanding how the shell parses input and using a legitimate feature of the
-environment to reach a normal shell. Pentesters break out of restricted shells
-constantly, and analysts need to recognise the resulting artefacts so seeing the
-mechanics from the inside is valuable on both sides.
+The distinction that matters: **real UID versus effective UID.**
 
-### Automation under constraints
-One stage requires guessing a value from a small, finite space. Rather than trying
-by hand, I generated the full set of possibilities programmatically and piped them
-to the service the same "make the computer do the repetitive part" instinct that
-underpins detection engineering and tooling work.
+A setuid binary runs with its owner's permissions rather than the caller's. That is the whole mechanism, and it is why a single misconfigured binary hands an attacker root.
 
----
+Recognising setuid in a file listing, and understanding why it is a vector rather than a curiosity, applies directly to both sides of a Linux host.
 
-## How I approach being stuck
+### Cron
 
-The most useful thing Bandit taught me wasn't a command it was a way of working
-when the obvious path has already failed.
+Several stages built on it, and the useful insight was not the syntax.
 
-One stage took me **two full days**. Every documented approach was correct, yet
-nothing worked. The breakthrough came from a shift in framing: I stopped assuming
-the *puzzle* was the obstacle and started questioning my *environment*. The wall
-turned out to be a tooling problem, not a knowledge problem. Once I isolated that
-variable changing where and how I was running the commands the solution that
-had been "correct" all along finally landed.
+It was **execution context.** Which identity does the job run as, versus who scheduled it. A writable script path executed by a privileged job is not a misconfiguration, it is a privilege escalation waiting for someone to notice.
 
-That loop is the same one a SOC analyst runs when an alert fires and the answer
-isn't obvious:
+That is also why cron is one of the most abused persistence mechanisms on Linux. It is built in, it survives reboot, and it looks like housekeeping.
 
-- **Separate the problem from the tooling.** Is the thing failing because my
-  approach is wrong, or because something in my environment is interfering?
-- **Isolate variables.** Change one thing at a time so you actually learn from
-  each attempt instead of guessing.
-- **Know when to change the environment, not the approach.** Sometimes the fix is
-  a different machine, a different shell, or a cleaner starting state not a
-  different command.
-- **Stay with it.** The willingness to sit in "I don't know yet" without closing
-  the terminal is, in practice, the job.
+### Git as an Attack Surface
 
-I document the stuck moments deliberately. Showing only the clean wins hides the
-part of learning that actually builds capability.
+The most job relevant sequence in the game.
 
----
+Secrets do not only live in the current files. They live in **commit history**, in **non default branches**, and in **tags**. I recovered credentials that had been removed from the working tree and never actually deleted.
 
-## Skills mapped to blue-team relevance
+`.gitignore` is not a security control. It stops a file being added. It does nothing about the file you already committed three months ago.
 
-| Bandit skill | Why it matters for a SOC analyst |
-|---|---|
-| setuid / privilege escalation | Recognising privesc techniques and the artefacts they leave |
-| Reading cron jobs and execution context | Understanding persistence and scheduled-task abuse |
-| Secrets in Git history / branches / tags | Auditing repositories for leaked credentials |
-| Restricted-shell escape recognition | Spotting attacker breakout behaviour in shell activity |
-| Port and service discovery | Understanding reconnaissance from the defender's side |
-| TLS vs. raw service connections | Reasoning about encrypted vs. plaintext traffic |
-| Scripting and automation | The foundation of detection engineering and tooling |
+This is exactly the surface gitleaks and trufflehog exist to scan, and it is a live concern in SOC, IR, and pentest work alike.
 
----
+### Restricted Shell Escapes
 
-## Tools used
+Two stages drop you into deliberately crippled shells. Escaping meant understanding how the shell parses input, then using a legitimate feature of the environment to reach a normal one.
 
-`ssh` · `nc` (netcat) · `openssl` · `nmap` · `diff` · `git` · `cron` · core
-GNU/Linux utilities · standard shell scripting
+The defender's side of this is the point. An analyst needs to recognise the artefacts a breakout leaves, and seeing the mechanics from the inside is what makes them legible.
 
----
+### Automation
+
+One stage requires guessing a value from a small finite space. Rather than trying by hand, generate the full set and pipe it in.
+
+Same instinct that produces detection tooling: make the computer do the repetitive part.
+
+## The Two Day Wall
+
+The most useful thing Bandit taught me was not a command.
+
+One stage took two full days. Every documented approach was correct. Nothing worked.
+
+The breakthrough came from a change of frame. I stopped assuming the puzzle was the obstacle and started questioning my environment. It was a tooling problem, not a knowledge problem. Once I isolated that variable, changing where and how I was running the commands, the solution that had been correct the whole time landed immediately.
+
+That loop is the one a SOC analyst runs when an alert fires and the answer is not obvious:
+
+**Separate the problem from the tooling.** Is this failing because my approach is wrong, or because something in my environment is interfering?
+
+**Isolate variables.** Change one thing at a time, so each attempt teaches you something instead of adding noise.
+
+**Know when to change the environment, not the approach.** Sometimes the fix is a different machine or a cleaner starting state, not a different command.
+
+**Stay with it.** The willingness to sit in "I do not know yet" without closing the terminal is, in practice, the job.
+
+The same shape shows up in my labs. A UFW rule that was syntactically correct and did nothing, because the traffic never passed through the chain the rule sits in. The rule was not wrong. The environment was not what I assumed.
+
+I document the stuck moments deliberately. Showing only the clean wins hides the part that builds the capability.
+
+## Blue Team Relevance
+
+| Bandit skill | Why it matters in a SOC |
+| --- | --- |
+| setuid and privilege escalation | Recognising the technique and the artefacts it leaves |
+| Cron and execution context | Understanding persistence and scheduled task abuse |
+| Secrets in Git history, branches, tags | Auditing repos for leaked credentials |
+| Restricted shell escapes | Spotting breakout behaviour in shell activity |
+| Port and service discovery | Reading reconnaissance from the defender's side |
+| TLS versus raw connections | Reasoning about encrypted and plaintext traffic |
+| Scripting and automation | The foundation of detection tooling |
+
+## Tools
+
+ssh, nc, openssl, nmap, diff, git, cron, GNU coreutils, shell scripting
 
 ## Status
 
-**Completed all levels.** Bandit is the foundational wargame in the OverTheWire
-series; finishing it establishes the Linux and security fundamentals that the more
-advanced wargames (and real blue-team work) build on.
+All levels complete.
+
+Bandit is the foundational wargame in the OverTheWire series. Finishing it establishes the Linux and security primitives the more advanced wargames build on, and that blue team work assumes you already have.
 
 ---
 
-*Part of my ongoing cybersecurity portfolio. I document my learning publicly
-including the parts that don't come easily because that's what the work actually
-looks like.*
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-WilliamInCyber-blue?style=flat&logo=linkedin)](https://linkedin.com/in/WilliamInCyber)
+[![X](https://img.shields.io/badge/X-@WilliamInCyber-black?style=flat&logo=x)](https://x.com/WilliamInCyber)
+[![Medium](https://img.shields.io/badge/Medium-@wgokahp-black?style=flat&logo=medium)](https://medium.com/@wgokahp)
