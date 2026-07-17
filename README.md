@@ -1,4 +1,4 @@
-# OverTheWire Bandit **  [![Medium](https://img.shields.io/badge/Medium-@wgokahp-black?style=flat&logo=medium)](https://medium.com/@wgokahp)
+# OverTheWire Bandit   [![Medium](https://img.shields.io/badge/Medium-@wgokahp-black?style=flat&logo=medium)](https://medium.com/@wgokahp)
 
 A walkthrough of the Linux and security fundamentals I built completing [OverTheWire Bandit](https://overthewire.org/wargames/bandit/) end to end.
 
