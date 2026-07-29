@@ -1,5 +1,14 @@
 # OverTheWire Bandit  
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![OverTheWire](https://img.shields.io/badge/OverTheWire-Bandit-blue.svg)](https://overthewire.org/wargames/bandit/)
+[![Levels](https://img.shields.io/badge/Levels-34%2F34%20Complete-brightgreen.svg)](https://overthewire.org/wargames/bandit/)
+[![Platform](https://img.shields.io/badge/Platform-Linux-FCC624.svg?logo=linux&logoColor=black)](https://www.kernel.org/)
+[![Focus](https://img.shields.io/badge/Focus-Blue%20Team-0052CC.svg)]()
+[![Skills](https://img.shields.io/badge/Skills-SSH%20%7C%20Git%20%7C%20Privilege%20Escalation-orange.svg)]()
+[![Shell](https://img.shields.io/badge/Shell-Bash-1f425f.svg)](https://www.gnu.org/software/bash/)
+[![Status](https://img.shields.io/badge/Status-Complete-brightgreen.svg)]()
+
 ## Walkthroughs
 
 ## Walkthroughs
